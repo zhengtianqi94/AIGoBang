@@ -45,7 +45,7 @@ class SGFflie():
         """将棋盘中的数据保存成棋谱"""
         data = self.createdata(board)
 
-        filepath = self.savepath + data.split(';')[1] + ".sgf"
+        filepath = self.trainpath + data.split(';')[1] + ".sgf"
         f = open(filepath, 'w')
         f.write(data)
         f.close()
