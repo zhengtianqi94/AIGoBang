@@ -136,7 +136,7 @@ class myCNN():
 
 #这一段用来训练神经网络，要训练是把注释去掉并运行这个文件就可以了
 '''_cnn = myCNN()
-path = sgf.allFileFromDir('E:\sgf\\')
+path = sgf.allFileFromDir('C:\PythonCodes\AIGoBang\sgf\\')
 _x, _y = sgf.createTraindataFromqipu(path[0])
 
 step = 0
