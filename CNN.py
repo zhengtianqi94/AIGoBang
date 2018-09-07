@@ -77,11 +77,11 @@ class myCNN():
         '''保存和读取模型'''
         if method == 1:
             self.saver.restore(self.sess, 'save\model.ckpt')
-            #print("已读取数据")
+            print("已读取数据")
         elif method == 0:
             saver = tf.train.Saver(write_version=tf.train.SaverDef.V2)
             saver.save(self.sess, 'save\model.ckpt')
-            #print('已保存')
+            print('已保存')
 
     def predition(self, qiju):
         '''预测函数'''

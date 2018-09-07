@@ -11,11 +11,11 @@ from tkinter.ttk import *
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import asksaveasfile
 from SGFfile import SGFflie
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from CNN import myCNN
 from robot import Robot
 from tools import *
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class GoBang(object):
 
@@ -209,8 +209,8 @@ class GoBang(object):
             print(AttributeError("请选择棋手"))
         return
 
-    def AIrobotChess(self):
-        """ai机器人下棋"""
+    def AIrobotBlackChess(self):
+        """黑棋AI下棋"""
         cnn_predict = self.cnn.predition(self.board)#预测
 
         if self.player % 2 == 0:
@@ -233,10 +233,10 @@ class GoBang(object):
             由于我没有训练白色棋子的神经网络
             所以，在这里直接让robot来下
             '''
-            self.robotChess()
+            self.AIrobotWhiteChess()
 
-    def robotChess(self):
-        """机器人下棋"""
+    def AIrobotWhiteChess(self):
+        """白棋AI下棋"""
         if self.player == 0:
 
             if len(self.bla_chessed) == 0 and len(self.whi_chessed) == 0:
@@ -276,9 +276,9 @@ class GoBang(object):
 
             self.someoneWin = self.check_win()
             if self.playmethod == 0:
-                self.AIrobotChess()
+                self.AIrobotBlackChess()
             else:
-                self.robotChess()
+                self.AIrobotWhiteChess()
             self.someoneWin = self.check_win()
 
     def get_net_board(self):
@@ -335,10 +335,34 @@ class GoBang(object):
             self.IsStart = True
             if self.player % 2 == 0:
                 if self.playmethod == 0:
-                    self.AIrobotChess()
+                    self.AIrobotBlackChess()
                 elif self.playmethod == 1:
-                    self.robotChess()
+                    self.AIrobotWhiteChess()
                 self.draw_chessed()
+
+    def autoPlay(self):
+        """自动对局"""
+        if self.someoneWin:
+            """判断是否有人赢了"""
+            return
+
+        if not self.IsStart:
+            self.IsStart = True
+            self.player = 0
+
+        if self.player == 0:
+            self.AIrobotBlackChess()
+            self.player = 1
+            self.playmethod = 1
+            self.draw_chessed()
+            self.someoneWin = self.check_win()
+        else:
+            self.AIrobotWhiteChess()
+            self.player = 0
+            self.playmethod = 0
+            self.draw_chessed()
+            self.someoneWin = self.check_win()
+        self.autoPlay()
 
     def selectColor(self):
         """选择执棋的颜色"""
@@ -440,6 +464,9 @@ class GoBang(object):
 
         b2 = Button(self.window, text="悔棋", command=self.BakcAChess)
         b2.place(relx=0, rely=0, x=495, y=200)
+
+        b3 = Button(self.window, text="自动对局", command=self.autoPlay)
+        b3.place(relx=0, rely=0, x=495, y=200)
 
         b4 = Radiobutton(self.window, text="电脑执黑棋", variable=self.var, value=0, command=self.selectColor)
         b4.place(relx=0, rely=0, x=495, y=250)
