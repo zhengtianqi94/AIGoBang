@@ -170,11 +170,11 @@ class GoBang(object):
         """检测是否有人赢了"""
         if self.have_five(self.whi_chessed) == True:
             label = Label(self.window, text="White Win!", background='#FFF8DC', font=("宋体", 15, "bold"))
-            label.place(relx=0, rely=0, x=480, y=40)
+            label.place(relx=0, rely=0, x=480, y=15)
             return True
         elif self.have_five(self.bla_chessed) == True:
             label = Label(self.window, text="Black Win!", background='#FFF8DC', font=("宋体", 15, "bold"))
-            label.place(relx=0, rely=0, x=480, y=40)
+            label.place(relx=0, rely=0, x=480, y=15)
             return True
         else:
             return False
@@ -299,7 +299,7 @@ class GoBang(object):
         self.board = self.init_board()
         self.robot = Robot(self.board)
         label = Label(self.window, text="          ", background="#F0F0F0", font=("宋体", 15, "bold"))
-        label.place(relx=0, rely=0, x=480, y=40)
+        label.place(relx=0, rely=0, x=480, y=15)
         self.can.delete("all")
         self.draw_board()
         self.can.grid(row=0, column=0)
@@ -457,13 +457,13 @@ class GoBang(object):
     def start(self):
         """开始，主要实现一些按钮与按键"""
         b3 = Button(self.window, text="开始", command=self.startButton)
-        b3.place(relx=0, rely=0, x=495, y=100)
+        b3.place(relx=0, rely=0, x=495, y=50)
 
         b1 = Button(self.window, text="重置", command=self.resetButton)
-        b1.place(relx=0, rely=0, x=495, y=150)
+        b1.place(relx=0, rely=0, x=495, y=100)
 
         b2 = Button(self.window, text="悔棋", command=self.BakcAChess)
-        b2.place(relx=0, rely=0, x=495, y=200)
+        b2.place(relx=0, rely=0, x=495, y=150)
 
         b3 = Button(self.window, text="自动对局", command=self.autoPlay)
         b3.place(relx=0, rely=0, x=495, y=200)
