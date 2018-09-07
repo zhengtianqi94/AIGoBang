@@ -10,12 +10,13 @@ from tkinter import *
 from tkinter.ttk import *
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import asksaveasfile
-from SGFfile import SGFflie
+from SGFFileProcess import SGFflie
 from CNN import myCNN
-from robot import Robot
-from tools import *
+from BaseRobot import Robot
+from Tools import *
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import time
 
 class GoBang(object):
 
@@ -181,7 +182,6 @@ class GoBang(object):
 
     def draw_chessed(self):
         """在棋盘中画出已经下过的棋子"""
-
         if len(self.whi_chessed) != 0:
             for tmp in self.whi_chessed:
                 oval = pos_to_draw(*tmp[0:2])
