@@ -14,6 +14,7 @@ from SGFFileProcess import SGFflie
 from CNN import myCNN
 from BaseRobot import Robot
 from Tools import *
+import tensorflow as tf
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import time
@@ -55,7 +56,7 @@ class GoBang(object):
         self.var.set(0)
         self.var1 = IntVar()
         self.var1.set(0)
-        self.window.title("Dept5 GoBang AI")
+        self.window.title("Dept5 AI GoBang")
         self.window.geometry("635x470+80+80")
         self.window.resizable(0, 0)
         self.can = Canvas(self.window, bg="#EEE8AC", width=470, height=470)
@@ -170,12 +171,13 @@ class GoBang(object):
     def check_win(self):
         """检测是否有人赢了"""
         if self.have_five(self.whi_chessed) == True:
-            label = Label(self.window, text="White Win!", background='#FFF8DC', font=("宋体", 15, "bold"))
-            label.place(relx=0, rely=0, x=480, y=15)
+            label = Label(self.window, text="白棋获胜!", background='#FFF8DC', font=("宋体", 15, "bold"))
+            label.place(relx=0, rely=0, x=490, y=15)
             return True
         elif self.have_five(self.bla_chessed) == True:
-            label = Label(self.window, text="Black Win!", background='#FFF8DC', font=("宋体", 15, "bold"))
-            label.place(relx=0, rely=0, x=480, y=15)
+            self.SaveFile()
+            label = Label(self.window, text="黑棋获胜!", background='#FFF8DC', font=("宋体", 15, "bold"))
+            label.place(relx=0, rely=0, x=490, y=15)
             return True
         else:
             return False
@@ -299,7 +301,7 @@ class GoBang(object):
         self.board = self.init_board()
         self.robot = Robot(self.board)
         label = Label(self.window, text="          ", background="#F0F0F0", font=("宋体", 15, "bold"))
-        label.place(relx=0, rely=0, x=480, y=15)
+        label.place(relx=0, rely=0, x=490, y=15)
         self.can.delete("all")
         self.draw_board()
         self.can.grid(row=0, column=0)
@@ -363,6 +365,30 @@ class GoBang(object):
             self.draw_chessed()
             self.someoneWin = self.check_win()
         self.autoPlay()
+
+    def reTrain(self):
+        """再训练方法"""
+        self.cnn.sess.close()
+        sgf = SGFflie()
+        _cnn = myCNN()
+        path = sgf.allFileFromDir('sgf\\')
+        _x, _y = sgf.createTraindataFromqipu(path[0])
+        step = 0
+        _path = path[:2000]
+        for filepath in path:
+            x, y = sgf.createTraindataFromqipu(filepath)
+            for i in range(1):
+                _cnn.sess.run(_cnn.train_step, feed_dict={_cnn.x: x, _cnn.y: y, _cnn.keep_prob: 0.5})
+            print(step)
+            step += 1
+        _cnn.restore_save(method=0)
+        _cnn.restore_save(method=1)
+        print(_cnn.sess.run(tf.argmax(_cnn.y_conv, 1), feed_dict={_cnn.x: _x[0:10], _cnn.keep_prob: 1.0}))
+        self.cnn = _cnn
+        self.cnn.restore_save()
+        self.resetButton()
+        label = Label(self.window, text="训练完成!", background='#FFF8DC', font=("宋体", 15, "bold"))
+        label.place(relx=0, rely=0, x=490, y=15)
 
     def selectColor(self):
         """选择执棋的颜色"""
@@ -460,31 +486,34 @@ class GoBang(object):
         b3.place(relx=0, rely=0, x=495, y=50)
 
         b1 = Button(self.window, text="重置", command=self.resetButton)
-        b1.place(relx=0, rely=0, x=495, y=100)
+        b1.place(relx=0, rely=0, x=495, y=90)
 
         b2 = Button(self.window, text="悔棋", command=self.BakcAChess)
-        b2.place(relx=0, rely=0, x=495, y=150)
+        b2.place(relx=0, rely=0, x=495, y=130)
 
         b3 = Button(self.window, text="自动对局", command=self.autoPlay)
-        b3.place(relx=0, rely=0, x=495, y=200)
+        b3.place(relx=0, rely=0, x=495, y=170)
 
-        b4 = Radiobutton(self.window, text="电脑执黑棋", variable=self.var, value=0, command=self.selectColor)
-        b4.place(relx=0, rely=0, x=495, y=250)
+        b4 = Button(self.window, text="重新训练", command=self.reTrain)
+        b4.place(relx=0, rely=0, x=495, y=210)
 
-        b5 = Radiobutton(self.window, text="电脑执白棋", variable=self.var, value=1, command=self.selectColor)
-        b5.place(relx=0, rely=0, x=495, y=280)
+        b5 = Radiobutton(self.window, text="电脑执黑棋", variable=self.var, value=0, command=self.selectColor)
+        b5.place(relx=0, rely=0, x=495, y=250)
 
-        b6 = Button(self.window, text="打开棋谱", command=self.OpenFile)
-        b6.place(relx=0, rely=0, x=495, y=400)
+        b6 = Radiobutton(self.window, text="电脑执白棋", variable=self.var, value=1, command=self.selectColor)
+        b6.place(relx=0, rely=0, x=495, y=280)
 
-        b7 = Button(self.window, text="保存棋谱", command=self.SaveFile)
-        b7.place(relx=0, rely=0, x=495, y=430)
+        b7 = Radiobutton(self.window, text="用神经网络走", variable=self.var1, value=0, command=self.selectMathod)
+        b7.place(relx=0, rely=0, x=490, y=310)
 
-        b8 = Radiobutton(self.window, text="用神经网络走", variable=self.var1, value=0, command=self.selectMathod)
-        b8.place(relx=0, rely=0, x=490, y=320)
+        b8 = Radiobutton(self.window, text="用普通规则走", variable=self.var1, value=1, command=self.selectMathod)
+        b8.place(relx=0, rely=0, x=490, y=340)
 
-        b9 = Radiobutton(self.window, text="用普通规则走", variable=self.var1, value=1, command=self.selectMathod)
-        b9.place(relx=0, rely=0, x=490, y=350)
+        b9 = Button(self.window, text="打开棋谱", command=self.OpenFile)
+        b9.place(relx=0, rely=0, x=495, y=370)
+
+        b10 = Button(self.window, text="保存棋谱", command=self.SaveFile)
+        b10.place(relx=0, rely=0, x=495, y=410)
 
         self.can.bind("<Button-1>", lambda x: self.chess(x))
         self.window.mainloop()
