@@ -356,13 +356,11 @@ class GoBang(object):
             self.AIrobotBlackChess()
             self.player = 1
             self.playmethod = 1
-            self.draw_chessed()
             self.someoneWin = self.check_win()
         else:
             self.AIrobotWhiteChess()
             self.player = 0
             self.playmethod = 0
-            self.draw_chessed()
             self.someoneWin = self.check_win()
         self.autoPlay()
 
