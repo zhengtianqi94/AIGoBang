@@ -358,6 +358,11 @@ class GoBang(object):
                     self.AIrobotWhiteChess()
                 self.draw_chessed()
 
+    def autoButton(self):
+        if self.someoneWin:
+            self.resetButton()
+        self.autoPlay()
+
     def autoPlay(self):
         """自动对局"""
         if self.someoneWin:
@@ -516,7 +521,7 @@ class GoBang(object):
         b2 = Button(self.window, text="悔棋", command=self.BakcAChess)
         b2.place(relx=0, rely=0, x=495, y=130)
 
-        b3 = Button(self.window, text="自动对局", command=self.autoPlay)
+        b3 = Button(self.window, text="自动对局", command=self.autoButton)
         b3.place(relx=0, rely=0, x=495, y=170)
 
         b4 = Button(self.window, text="重新训练", command=self.reTrain)
