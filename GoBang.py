@@ -226,7 +226,7 @@ class GoBang(object):
 
             else:
                 #机器人计算出全局价值最大的点
-                _x, _y, _ = self.robot.MaxValue_po(1, 0, self.hardLevel)
+                _x, _y, _ = self.robot.MaxValue_po(1, 0, 1)
                 if _x == -1 and _y == -1 and _ == -1:
                     label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
                     label.place(relx=0, rely=0, x=490, y=15)
@@ -517,8 +517,8 @@ class GoBang(object):
 
     def start(self):
         """开始，主要实现一些按钮与按键"""
-        b3 = Button(self.window, text="开始", command=self.startButton)
-        b3.place(relx=0, rely=0, x=495, y=50)
+        b0 = Button(self.window, text="开始", command=self.startButton)
+        b0.place(relx=0, rely=0, x=495, y=50)
 
         b1 = Button(self.window, text="重置", command=self.resetButton)
         b1.place(relx=0, rely=0, x=495, y=90)
@@ -532,23 +532,17 @@ class GoBang(object):
         b4 = Button(self.window, text="重新训练", command=self.reTrain)
         b4.place(relx=0, rely=0, x=495, y=210)
 
-        b5 = Radiobutton(self.window, text="电脑执黑棋", variable=self.var, value=0, command=self.selectColor)
+        b5 = Radiobutton(self.window, text="电脑执黑", variable=self.var, value=0, command=self.selectColor)
         b5.place(relx=0, rely=0, x=495, y=250)
 
-        b6 = Radiobutton(self.window, text="电脑执白棋", variable=self.var, value=1, command=self.selectColor)
+        b6 = Radiobutton(self.window, text="电脑执白", variable=self.var, value=1, command=self.selectColor)
         b6.place(relx=0, rely=0, x=495, y=280)
 
-        b7 = Radiobutton(self.window, text="用神经网络走", variable=self.var1, value=0, command=self.selectMathod)
-        b7.place(relx=0, rely=0, x=490, y=310)
+        b7 = Radiobutton(self.window, text="普通难度", variable=self.var2, value=0, command=self.selectHard)
+        b7.place(relx=0, rely=0, x=490, y=370)
 
-        b8 = Radiobutton(self.window, text="用普通规则走", variable=self.var1, value=1, command=self.selectMathod)
-        b8.place(relx=0, rely=0, x=490, y=340)
-
-        b11 = Radiobutton(self.window, text="普通难度", variable=self.var2, value=0, command=self.selectHard)
-        b11.place(relx=0, rely=0, x=490, y=370)
-
-        b12 = Radiobutton(self.window, text="高级难度", variable=self.var2, value=1, command=self.selectHard)
-        b12.place(relx=0, rely=0, x=490, y=400)
+        b8 = Radiobutton(self.window, text="高级难度", variable=self.var2, value=1, command=self.selectHard)
+        b8.place(relx=0, rely=0, x=490, y=400)
 
         b9 = Button(self.window, text="打开棋谱", command=self.OpenFile)
         b9.place(relx=0, rely=0, x=495, y=430)
