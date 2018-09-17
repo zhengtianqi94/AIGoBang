@@ -55,12 +55,10 @@ class GoBang(object):
         self.window = Tk()
         self.var = IntVar()
         self.var.set(0)
-        self.var1 = IntVar()
-        self.var1.set(0)
         self.var2 = IntVar()
         self.var2.set(0)
         self.window.title("Dept5 AI GoBang")
-        self.window.geometry("635x500+80+80")
+        self.window.geometry("635x470+80+80")
         self.window.resizable(0, 0)
         self.can = Canvas(self.window, bg="#C1FFC1", width=470, height=470)
         self.draw_board()
@@ -121,7 +119,8 @@ class GoBang(object):
         4000返回真
         """
         no_in_chessed = self.no_in_chessed(pos)
-        return no_in_chessed and value < 4000
+        # return no_in_chessed and value < 4000
+        return no_in_chessed
 
     def check_chessed(self, point, chessed):
         """检测是否已经下过了"""
@@ -539,16 +538,16 @@ class GoBang(object):
         b6.place(relx=0, rely=0, x=495, y=280)
 
         b7 = Radiobutton(self.window, text="普通难度", variable=self.var2, value=0, command=self.selectHard)
-        b7.place(relx=0, rely=0, x=490, y=370)
+        b7.place(relx=0, rely=0, x=495, y=310)
 
         b8 = Radiobutton(self.window, text="高级难度", variable=self.var2, value=1, command=self.selectHard)
-        b8.place(relx=0, rely=0, x=490, y=400)
+        b8.place(relx=0, rely=0, x=495, y=340)
 
         b9 = Button(self.window, text="打开棋谱", command=self.OpenFile)
-        b9.place(relx=0, rely=0, x=495, y=430)
+        b9.place(relx=0, rely=0, x=495, y=370)
 
         b10 = Button(self.window, text="保存棋谱", command=self.SaveFile)
-        b10.place(relx=0, rely=0, x=495, y=460)
+        b10.place(relx=0, rely=0, x=495, y=400)
 
         self.can.bind("<Button-1>", lambda x: self.chess(x))
         self.window.mainloop()
