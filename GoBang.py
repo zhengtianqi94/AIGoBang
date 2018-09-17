@@ -348,6 +348,11 @@ class GoBang(object):
             self.draw_chessed()
 
     def startButton(self):
+        if self.someoneWin:
+            self.resetButton()
+        self.startPlay()
+
+    def startPlay(self):
         """开始按钮的回调函数"""
         if self.IsStart == False:
             self.IsStart = True
