@@ -6,7 +6,7 @@ class Robot(object):
     def __init__(self, _board):
         self.board = _board
 
-    def haveValuePoints(self, player, enemy, board):
+    def haveValuePoints(self, player, enemy, board, hard):
         """算出棋盘中所有有价值的点"""
         points = []
 
@@ -38,9 +38,8 @@ class Robot(object):
                         else:
                             list4.append(board[i][k])
 
-
-                    playerValue = self.value_point(player, enemy, list1, list2, list3, list4)
-                    enemyValue = self.value_point(enemy, player, list1, list2, list3, list4)
+                    playerValue = self.value_point(player, enemy, list1, list2, list3, list4, hard)
+                    enemyValue = self.value_point(enemy, player, list1, list2, list3, list4, hard)
                     if enemyValue >= 10000:
                         enemyValue -= 500
                     elif enemyValue >= 5000:
@@ -58,9 +57,9 @@ class Robot(object):
                         points.append([x, y, value])
         return points
 
-    def MaxValue_po(self, player, enemy):
+    def MaxValue_po(self, player, enemy, hard):
         """算出最大价值的点"""
-        points = self.haveValuePoints(player, enemy, self.board)
+        points = self.haveValuePoints(player, enemy, self.board, hard)
         if len(points) == 0:
             return -1, -1, -1
         flag = 0
@@ -80,9 +79,10 @@ class Robot(object):
         p2 = _point[index][2]
         return p0, p1, p2
 
-    def value_point(self, player, enemy, list1, list2, list3, list4):
+    def value_point(self, player, enemy, list1, list2, list3, list4, hard):
         """算出点的价值"""
         flag = 0
+
         flag += self.willbefive(player, list1)
         flag += self.willbefive(player, list2)
         flag += self.willbefive(player, list3)
@@ -95,14 +95,18 @@ class Robot(object):
         flag += self.willbesleep4(player, enemy, list2)
         flag += self.willbesleep4(player, enemy, list3)
         flag += self.willbesleep4(player, enemy, list4)
-        flag += self.willbealive3(player, list1)
-        flag += self.willbealive3(player, list2)
-        flag += self.willbealive3(player, list3)
-        flag += self.willbealive3(player, list4)
-        flag += self.willbesleep3(player, enemy, list1)
-        flag += self.willbesleep3(player, enemy, list2)
-        flag += self.willbesleep3(player, enemy, list3)
-        flag += self.willbesleep3(player, enemy, list4)
+
+        """如果难度选择为普通，规则AI自动忽略3子连线，大幅度降低难度"""
+        if hard == 1:
+            flag += self.willbealive3(player, list1)
+            flag += self.willbealive3(player, list2)
+            flag += self.willbealive3(player, list3)
+            flag += self.willbealive3(player, list4)
+            flag += self.willbesleep3(player, enemy, list1)
+            flag += self.willbesleep3(player, enemy, list2)
+            flag += self.willbesleep3(player, enemy, list3)
+            flag += self.willbesleep3(player, enemy, list4)
+
         flag += self.willbealive2(player, enemy, list1)
         flag += self.willbealive2(player, enemy, list2)
         flag += self.willbealive2(player, enemy, list3)

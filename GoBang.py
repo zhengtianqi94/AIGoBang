@@ -47,6 +47,7 @@ class GoBang(object):
         self.IsStart = False
         self.player = 0
         self.playmethod = 0
+        self.hardLevel = 0
         self.bla_start_pos = [235, 235]
         self.whi_chessed = []
         self.bla_chessed = []
@@ -56,8 +57,10 @@ class GoBang(object):
         self.var.set(0)
         self.var1 = IntVar()
         self.var1.set(0)
+        self.var2 = IntVar()
+        self.var2.set(0)
         self.window.title("Dept5 AI GoBang")
-        self.window.geometry("635x470+80+80")
+        self.window.geometry("635x500+80+80")
         self.window.resizable(0, 0)
         self.can = Canvas(self.window, bg="#C1FFC1", width=470, height=470)
         self.draw_board()
@@ -223,7 +226,7 @@ class GoBang(object):
 
             else:
                 #机器人计算出全局价值最大的点
-                _x, _y, _ = self.robot.MaxValue_po(1, 0)
+                _x, _y, _ = self.robot.MaxValue_po(1, 0, self.hardLevel)
                 if _x == -1 and _y == -1 and _ == -1:
                     label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
                     label.place(relx=0, rely=0, x=490, y=15)
@@ -252,7 +255,7 @@ class GoBang(object):
                 return
 
             else:
-                _x, _y, _ = self.robot.MaxValue_po(0, 1)
+                _x, _y, _ = self.robot.MaxValue_po(0, 1, self.hardLevel)
                 if _x == -1 and _y == -1 and _ == -1:
                     label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
                     label.place(relx=0, rely=0, x=490, y=15)
@@ -260,7 +263,7 @@ class GoBang(object):
                 newPoint = pos_in_board(_x, _y)
                 self.draw_a_chess(*newPoint, player=0)
         else:#白棋下
-            _x, _y, _ = self.robot.MaxValue_po(1, 0)
+            _x, _y, _ = self.robot.MaxValue_po(1, 0, self.hardLevel)
             if _x == -1 and _y == -1 and _ == -1:
                 label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
                 label.place(relx=0, rely=0, x=490, y=15)
@@ -424,6 +427,17 @@ class GoBang(object):
                 pass
         return
 
+    def selectHard(self):
+        """选择下棋的方式，与robot下还是与ai下，0：跟ai，1：跟robot"""
+        if self.IsStart == False:
+            if self.var2.get() == 0:
+                self.hardLevel = 0
+            elif self.var2.get() == 1:
+                self.hardLevel = 1
+            else:
+                pass
+        return
+
     def createqipu(self):
         """将棋盘中的棋局生成棋盘"""
         qipu = []
@@ -520,11 +534,17 @@ class GoBang(object):
         b8 = Radiobutton(self.window, text="用普通规则走", variable=self.var1, value=1, command=self.selectMathod)
         b8.place(relx=0, rely=0, x=490, y=340)
 
+        b11 = Radiobutton(self.window, text="普通难度", variable=self.var2, value=0, command=self.selectHard)
+        b11.place(relx=0, rely=0, x=490, y=370)
+
+        b12 = Radiobutton(self.window, text="高级难度", variable=self.var2, value=1, command=self.selectHard)
+        b12.place(relx=0, rely=0, x=490, y=400)
+
         b9 = Button(self.window, text="打开棋谱", command=self.OpenFile)
-        b9.place(relx=0, rely=0, x=495, y=370)
+        b9.place(relx=0, rely=0, x=495, y=430)
 
         b10 = Button(self.window, text="保存棋谱", command=self.SaveFile)
-        b10.place(relx=0, rely=0, x=495, y=410)
+        b10.place(relx=0, rely=0, x=495, y=460)
 
         self.can.bind("<Button-1>", lambda x: self.chess(x))
         self.window.mainloop()
