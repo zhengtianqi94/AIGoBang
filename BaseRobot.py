@@ -1,3 +1,5 @@
+import random as rnd
+
 class Robot(object):
     '''基于五子棋规则写的一个机器人'''
 
@@ -59,13 +61,24 @@ class Robot(object):
     def MaxValue_po(self, player, enemy):
         """算出最大价值的点"""
         points = self.haveValuePoints(player, enemy, self.board)
+        if len(points) == 0:
+            return -1, -1, -1
         flag = 0
         _point = []
         for p in points:
-            if p[2] > flag:
-                _point = p
+            if p[2] == flag:
+                _point.append([p[0], p[1], p[2]])
+            elif p[2] > flag:
+                _point.clear()
+                _point.append([p[0], p[1], p[2]])
                 flag = p[2]
-        return _point[0], _point[1], _point[2]
+        index = rnd.randint(0, len(_point) - 1)
+        print(_point)
+        print(index)
+        p0 = _point[index][0]
+        p1 = _point[index][1]
+        p2 = _point[index][2]
+        return p0, p1, p2
 
     def value_point(self, player, enemy, list1, list2, list3, list4):
         """算出点的价值"""

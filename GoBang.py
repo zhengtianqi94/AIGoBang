@@ -17,7 +17,7 @@ from Tools import *
 import tensorflow as tf
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-import time
+import sys
 
 class GoBang(object):
 
@@ -59,7 +59,7 @@ class GoBang(object):
         self.window.title("Dept5 AI GoBang")
         self.window.geometry("635x470+80+80")
         self.window.resizable(0, 0)
-        self.can = Canvas(self.window, bg="#EEE8AC", width=470, height=470)
+        self.can = Canvas(self.window, bg="#C1FFC1", width=470, height=470)
         self.draw_board()
         self.can.grid(row=0, column=0)
         self.net_board = self.get_net_board()
@@ -67,6 +67,7 @@ class GoBang(object):
         self.sgf = SGFflie()
         self.cnn = myCNN()
         self.cnn.restore_save()
+        sys.setrecursionlimit(15*15)
 
     def init_board(self):
         """初始化棋盘"""
@@ -112,9 +113,9 @@ class GoBang(object):
         """
         ai预测出来的点是否已经下过，
         以及结合机器人计算出来的值，
-        如果ai的点为下过，而且机器
-        人预测出来的最大值小于400
-        返回真
+        如果ai的点为没有下过，而且
+        机器人预测出来的最大值小于
+        4000返回真
         """
         no_in_chessed = self.no_in_chessed(pos)
         return no_in_chessed and value < 4000
@@ -223,6 +224,10 @@ class GoBang(object):
             else:
                 #机器人计算出全局价值最大的点
                 _x, _y, _ = self.robot.MaxValue_po(1, 0)
+                if _x == -1 and _y == -1 and _ == -1:
+                    label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
+                    label.place(relx=0, rely=0, x=490, y=15)
+                    self.someoneWin = True
                 newPoint = pos_in_board(_x, _y)
 
                 if self.ai_no_in_chessed(cnn_predict, _):
@@ -248,10 +253,18 @@ class GoBang(object):
 
             else:
                 _x, _y, _ = self.robot.MaxValue_po(0, 1)
+                if _x == -1 and _y == -1 and _ == -1:
+                    label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
+                    label.place(relx=0, rely=0, x=490, y=15)
+                    self.someoneWin = True
                 newPoint = pos_in_board(_x, _y)
                 self.draw_a_chess(*newPoint, player=0)
         else:#白棋下
             _x, _y, _ = self.robot.MaxValue_po(1, 0)
+            if _x == -1 and _y == -1 and _ == -1:
+                label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
+                label.place(relx=0, rely=0, x=490, y=15)
+                self.someoneWin = True
             newPoint = pos_in_board(_x, _y)
             self.draw_a_chess(*newPoint, player=1)
 
@@ -356,12 +369,12 @@ class GoBang(object):
             self.AIrobotBlackChess()
             self.player = 1
             self.playmethod = 1
-            self.someoneWin = self.check_win()
+            self.someoneWin = self.someoneWin or self.check_win()
         else:
             self.AIrobotWhiteChess()
             self.player = 0
             self.playmethod = 0
-            self.someoneWin = self.check_win()
+            self.someoneWin = self.someoneWin or self.check_win()
         self.autoPlay()
 
     def reTrain(self):
