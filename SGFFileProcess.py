@@ -32,8 +32,12 @@ class SGFflie():
         board = []
         step = 0
         for point in s:
-            x = self.POS.find(point[2]) - 1
-            y = self.POS.find(point[3]) - 1
+            x = self.POS.find(point[2])
+            y = self.POS.find(point[3])
+            # origin = point[2] + " " + point[3]
+            # state = str(x) + " " + str(y)
+            # print(origin)
+            # print(state)
             color = step % 2
             step += 1
             board.append([x, y, color, step])

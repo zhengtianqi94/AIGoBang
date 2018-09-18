@@ -225,7 +225,7 @@ class GoBang(object):
 
     def AIrobotBlackChess(self):
         """黑棋AI下棋"""
-        print("Black Chessed")
+        # print("Black Chessed")
 
         cnn_predict = self.cnn.predition(self.board)#预测
 
@@ -253,7 +253,7 @@ class GoBang(object):
 
     def AIrobotWhiteChess(self):
         """白棋AI下棋"""
-        print("White Chessed")
+        # print("White Chessed")
         if self.player == 0:
 
             if len(self.bla_chessed) == 0 and len(self.whi_chessed) == 0:
@@ -371,12 +371,15 @@ class GoBang(object):
                 self.draw_chessed()
 
     def autoButton(self):
+        # print(self.hardLevel)
+        # print(self.CnnMode)
         if self.someoneWin:
             self.resetButton()
         self.autoPlay()
 
     def autoPlay(self):
         """自动对局"""
+
         if self.someoneWin:
             """判断是否有人赢了"""
             return
@@ -430,7 +433,6 @@ class GoBang(object):
                 self.player = 1
             else:
                 pass
-
         return
 
     def selectHard(self):
@@ -442,6 +444,7 @@ class GoBang(object):
                 self.hardLevel = 1
             else:
                 pass
+        # print(self.hardLevel)
         return
 
     def selectCnnMode(self):
@@ -453,6 +456,7 @@ class GoBang(object):
                 self.CnnMode = 1
             else:
                 pass
+        # print(self.CnnMode)
         return
 
     def createqipu(self):
