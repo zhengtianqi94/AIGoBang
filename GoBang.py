@@ -1,9 +1,8 @@
-#coding=utf-8
+
+"""Author: zheng.tq@bankcomm.com"""
+
 '''
-这是主程序，主要定义了Gobang和Robot两个对象：
-1.Gobang主要是图像界面交互的实现。
-2.Robot是基于五子棋的一些基本规则写出来的一个简单智能程序，不包含
-神经网络的搭建。
+主程序，BaseRobot是基本规则AI，CNN是神经网络AI，其中神经网络AI的模式可选
 '''
 
 from tkinter import *
@@ -28,19 +27,21 @@ class GoBang(object):
         humanChessed:人类玩家是否下了
         IsStart:是否开始游戏了
         player:玩家是哪一方
-        playmethod:模式，和robot下棋，还是和ai下棋
+        hardLevel:基本规则的强度
+        CnnMode:神经网络是否被基本规则限制
         bla_start_pos:黑棋开局时下在正中间的位置
         bla_chessed:保存黑棋已经下过的棋子
         whi_chessed:保存白棋已经下过的棋子
         board:棋盘
         window:窗口
         var:用于标记选择玩家颜色的一个变量
-        var1:用于标记选择robot或者ai的一个变量
+        var1:用于标记选择神经网络模式的一个变量
+        var2:用于标记选择基本规则强度的一个变量
         can:画布，用于绘出棋盘
         net_board:棋盘的点信息
         robot:机器人
         sgf:处理棋谱
-        cnn:cnnc神经网络
+        cnn:cnn神经网络
         """
         self.someoneWin = False
         self.humanChessed = False
@@ -48,6 +49,7 @@ class GoBang(object):
         self.player = 0
         self.playmethod = 0
         self.hardLevel = 0
+        self.CnnMode = 0
         self.bla_start_pos = [235, 235]
         self.whi_chessed = []
         self.bla_chessed = []
@@ -55,10 +57,12 @@ class GoBang(object):
         self.window = Tk()
         self.var = IntVar()
         self.var.set(0)
+        self.var1 = IntVar()
+        self.var1.set(0)
         self.var2 = IntVar()
         self.var2.set(0)
         self.window.title("Dept5 AI GoBang")
-        self.window.geometry("635x470+80+80")
+        self.window.geometry("675x500+80+80")
         self.window.resizable(0, 0)
         self.can = Canvas(self.window, bg="#C1FFC1", width=470, height=470)
         self.draw_board()
@@ -112,15 +116,20 @@ class GoBang(object):
 
     def ai_no_in_chessed(self, pos, value):
         """
-        ai预测出来的点是否已经下过，
-        以及结合机器人计算出来的值，
-        如果ai的点为没有下过，而且
-        机器人预测出来的最大值小于
-        4000返回真
+        神经网络限制方法，结合基本
+        规则进行检查
+
+        首先检查ai预测出来的点是否
+        已经下过，以及结合机器人计
+        算出来的值，如果ai的点为没
+        有下过，而且机器人预测出来
+        的最大值小于4000返回真
         """
         no_in_chessed = self.no_in_chessed(pos)
-        # return no_in_chessed and value < 4000
-        return no_in_chessed
+        if self.CnnMode == 0:
+            return no_in_chessed and value < 4000
+        elif self.CnnMode == 1:
+            return no_in_chessed
 
     def check_chessed(self, point, chessed):
         """检测是否已经下过了"""
@@ -174,12 +183,12 @@ class GoBang(object):
     def check_win(self):
         """检测是否有人赢了"""
         if self.have_five(self.whi_chessed) == True:
-            label = Label(self.window, text="白棋获胜!", background='#FFF8DC', font=("宋体", 15, "bold"))
+            label = Label(self.window, text="白棋获胜!", background='#EEEEEE', font=("宋体", 15, "bold"))
             label.place(relx=0, rely=0, x=490, y=15)
             return True
         elif self.have_five(self.bla_chessed) == True:
             self.SaveFile()
-            label = Label(self.window, text="黑棋获胜!", background='#FFF8DC', font=("宋体", 15, "bold"))
+            label = Label(self.window, text="黑棋获胜!", background='#EEEEEE', font=("宋体", 15, "bold"))
             label.place(relx=0, rely=0, x=490, y=15)
             return True
         else:
@@ -216,18 +225,20 @@ class GoBang(object):
 
     def AIrobotBlackChess(self):
         """黑棋AI下棋"""
+        print("Black Chessed")
+
         cnn_predict = self.cnn.predition(self.board)#预测
 
         if self.player % 2 == 0:
-            """开局优化"""
+            """开局"""
             if len(self.bla_chessed) == 0 and len(self.whi_chessed) == 0:
                 self.draw_a_chess(*self.bla_start_pos, 0)
 
             else:
                 #机器人计算出全局价值最大的点
-                _x, _y, _ = self.robot.MaxValue_po(1, 0, 1)
+                _x, _y, _ = self.robot.MaxValue_po(1, 0, self.hardLevel)
                 if _x == -1 and _y == -1 and _ == -1:
-                    label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
+                    label = Label(self.window, text="平局!", background='#EEEEEE', font=("宋体", 15, "bold"))
                     label.place(relx=0, rely=0, x=490, y=15)
                     self.someoneWin = True
                 newPoint = pos_in_board(_x, _y)
@@ -238,25 +249,22 @@ class GoBang(object):
                     self.draw_a_chess(*newPoint, 0)
 
         else:
-            '''
-            由于我没有训练白色棋子的神经网络
-            所以，在这里直接让robot来下
-            '''
             self.AIrobotWhiteChess()
 
     def AIrobotWhiteChess(self):
         """白棋AI下棋"""
+        print("White Chessed")
         if self.player == 0:
 
             if len(self.bla_chessed) == 0 and len(self.whi_chessed) == 0:
-                '''电脑执黑棋，开局优化'''
+                """开局"""
                 self.draw_a_chess(*self.bla_start_pos, player=0)
                 return
 
             else:
                 _x, _y, _ = self.robot.MaxValue_po(0, 1, self.hardLevel)
                 if _x == -1 and _y == -1 and _ == -1:
-                    label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
+                    label = Label(self.window, text="平局!", background='#EEEEEE', font=("宋体", 15, "bold"))
                     label.place(relx=0, rely=0, x=490, y=15)
                     self.someoneWin = True
                 newPoint = pos_in_board(_x, _y)
@@ -264,7 +272,7 @@ class GoBang(object):
         else:#白棋下
             _x, _y, _ = self.robot.MaxValue_po(1, 0, self.hardLevel)
             if _x == -1 and _y == -1 and _ == -1:
-                label = Label(self.window, text="平局!", background='#FFF8DC', font=("宋体", 15, "bold"))
+                label = Label(self.window, text="平局!", background='#EEEEEE', font=("宋体", 15, "bold"))
                 label.place(relx=0, rely=0, x=490, y=15)
                 self.someoneWin = True
             newPoint = pos_in_board(_x, _y)
@@ -315,7 +323,7 @@ class GoBang(object):
         self.bla_chessed.clear()
         self.board = self.init_board()
         self.robot = Robot(self.board)
-        label = Label(self.window, text="          ", background="#F0F0F0", font=("宋体", 15, "bold"))
+        label = Label(self.window, text="          ", background="#EEEEEE", font=("宋体", 15, "bold"))
         label.place(relx=0, rely=0, x=490, y=15)
         self.can.delete("all")
         self.draw_board()
@@ -410,7 +418,7 @@ class GoBang(object):
         self.cnn = _cnn
         self.cnn.restore_save()
         self.resetButton()
-        label = Label(self.window, text="训练完成!", background='#FFF8DC', font=("宋体", 15, "bold"))
+        label = Label(self.window, text="训练完成!", background='#EEEEEE', font=("宋体", 15, "bold"))
         label.place(relx=0, rely=0, x=490, y=15)
 
     def selectColor(self):
@@ -425,24 +433,24 @@ class GoBang(object):
 
         return
 
-    def selectMathod(self):
-        """选择下棋的方式，与robot下还是与ai下，0：跟ai，1：跟robot"""
-        if self.IsStart == False:
-            if self.var1.get() == 0:
-                self.playmethod = 0
-            elif self.var1.get() == 1:
-                self.playmethod = 1
-            else:
-                pass
-        return
-
     def selectHard(self):
-        """选择下棋的方式，与robot下还是与ai下，0：跟ai，1：跟robot"""
+        """选择基本规则的强度，0：忽略三连棋型的普通难度AI，1：高强度AI"""
         if self.IsStart == False:
             if self.var2.get() == 0:
                 self.hardLevel = 0
             elif self.var2.get() == 1:
                 self.hardLevel = 1
+            else:
+                pass
+        return
+
+    def selectCnnMode(self):
+        """选择神经网络的下棋思路，0：神经网络+基本规则限制，1：纯神经网络"""
+        if self.IsStart == False:
+            if self.var1.get() == 0:
+                self.CnnMode = 0
+            elif self.var1.get() == 1:
+                self.CnnMode = 1
             else:
                 pass
         return
@@ -531,10 +539,10 @@ class GoBang(object):
         b4 = Button(self.window, text="重新训练", command=self.reTrain)
         b4.place(relx=0, rely=0, x=495, y=210)
 
-        b5 = Radiobutton(self.window, text="电脑执黑", variable=self.var, value=0, command=self.selectColor)
+        b5 = Radiobutton(self.window, text="电脑执黑(神经网络)", variable=self.var, value=0, command=self.selectColor)
         b5.place(relx=0, rely=0, x=495, y=250)
 
-        b6 = Radiobutton(self.window, text="电脑执白", variable=self.var, value=1, command=self.selectColor)
+        b6 = Radiobutton(self.window, text="电脑执白(基本规则)", variable=self.var, value=1, command=self.selectColor)
         b6.place(relx=0, rely=0, x=495, y=280)
 
         b7 = Radiobutton(self.window, text="普通难度", variable=self.var2, value=0, command=self.selectHard)
@@ -543,11 +551,17 @@ class GoBang(object):
         b8 = Radiobutton(self.window, text="高级难度", variable=self.var2, value=1, command=self.selectHard)
         b8.place(relx=0, rely=0, x=495, y=340)
 
-        b9 = Button(self.window, text="打开棋谱", command=self.OpenFile)
+        b9 = Radiobutton(self.window, text="基本规则限制", variable=self.var1, value=0, command=self.selectCnnMode)
         b9.place(relx=0, rely=0, x=495, y=370)
 
-        b10 = Button(self.window, text="保存棋谱", command=self.SaveFile)
+        b10 = Radiobutton(self.window, text="纯神经网络", variable=self.var1, value=1, command=self.selectCnnMode)
         b10.place(relx=0, rely=0, x=495, y=400)
+
+        b11 = Button(self.window, text="打开棋谱", command=self.OpenFile)
+        b11.place(relx=0, rely=0, x=495, y=430)
+
+        b12 = Button(self.window, text="保存棋谱", command=self.SaveFile)
+        b12.place(relx=0, rely=0, x=495, y=460)
 
         self.can.bind("<Button-1>", lambda x: self.chess(x))
         self.window.mainloop()

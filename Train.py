@@ -1,3 +1,10 @@
+
+"""Author: zheng.tq@bankcomm.com"""
+
+'''
+训练函数，如需训练模型直接运行本文件即可
+'''
+
 import tensorflow as tf
 from SGFFileProcess import SGFflie
 from CNN import myCNN

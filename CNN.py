@@ -1,3 +1,10 @@
+
+"""Author: zheng.tq@bankcomm.com"""
+
+'''
+神经网络模型
+'''
+
 import tensorflow as tf
 from SGFFileProcess import SGFflie
 

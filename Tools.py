@@ -1,3 +1,10 @@
+
+"""Author: zheng.tq@bankcomm.com"""
+
+'''
+一些计算方法
+'''
+
 import math
 
 def get_distance(p0, p1):

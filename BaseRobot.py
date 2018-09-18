@@ -1,3 +1,10 @@
+
+"""Author: zheng.tq@bankcomm.com"""
+
+'''
+基于五子棋基本规则的机器人
+'''
+
 import random as rnd
 
 class Robot(object):
@@ -72,8 +79,6 @@ class Robot(object):
                 _point.append([p[0], p[1], p[2]])
                 flag = p[2]
         index = rnd.randint(0, len(_point) - 1)
-        print(_point)
-        print(index)
         p0 = _point[index][0]
         p1 = _point[index][1]
         p2 = _point[index][2]

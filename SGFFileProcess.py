@@ -1,8 +1,8 @@
+
+"""Author: zheng.tq@bankcomm.com"""
+
 '''
-这一段用来训练神经网络，要训练是把注释去掉并运行这个文件就可以了
-由于棋谱是以sgf格式保存的，所以这个程序主要实现了对sgf文件的处理，
-转化问程序通用的棋谱形式。这个程序还包括了一些棋谱转sgf,以及一些
-其他骚操作。
+文件处理方法及文件-棋谱互相转换方法
 '''
 
 import time
@@ -24,7 +24,6 @@ class SGFflie():
         """打开文件,读取棋谱"""
         f = open(filepath, 'r')
         data = f.read()
-        f.close()
 
         #分割数据
         effective_data = data.split(';')
@@ -33,11 +32,13 @@ class SGFflie():
         board = []
         step = 0
         for point in s:
-            x = self.POS.index(point[2])
-            y = self.POS.index(point[3])
+            x = self.POS.find(point[2]) - 1
+            y = self.POS.find(point[3]) - 1
             color = step % 2
             step += 1
             board.append([x, y, color, step])
+
+        f.close()
 
         return board
 
